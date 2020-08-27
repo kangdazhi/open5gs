@@ -62,6 +62,7 @@ extern struct dict_object *ogs_diam_experimental_result_code;
 extern struct dict_object *ogs_diam_vendor_specific_application_id;
 extern struct dict_object *ogs_diam_mip6_agent_info;
 extern struct dict_object *ogs_diam_mip_home_agent_address;
+extern struct dict_object *ogs_diam_authorization_lifetime;
 
 extern struct dict_object *ogs_diam_vendor;
 extern struct dict_object *ogs_diam_vendor_id;

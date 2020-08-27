@@ -57,6 +57,7 @@ extern struct dict_object *ogs_diam_rx_cmd_asa;
 extern struct dict_object *ogs_diam_rx_cmd_str;
 extern struct dict_object *ogs_diam_rx_cmd_sta;
 
+extern struct dict_object *ogs_diam_rx_af_application_identifier;
 extern struct dict_object *ogs_diam_rx_media_component_description;
 extern struct dict_object *ogs_diam_rx_media_component_number;
 extern struct dict_object *ogs_diam_rx_media_type;

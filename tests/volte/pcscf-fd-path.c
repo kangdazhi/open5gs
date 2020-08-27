@@ -20,6 +20,7 @@
 #include "ogs-gtp.h"
 #include "ogs-diameter-rx.h"
 
+#include "test-common.h"
 #include "pcscf-fd-path.h"
 
 #define MAX_NUM_SESSION_STATE 32
@@ -66,8 +67,8 @@ static int pcscf_rx_fb_cb(struct msg **msg, struct avp *avp,
 	return ENOTSUP;
 }
 
-void pcscf_rx_send_aar(uint8_t **rx_sid, const char *ip,
-        int qos_type, int flow_presence)
+void pcscf_rx_send_aar(uint8_t **rx_sid,
+        test_sess_t *sess, int qos_type, int flow_presence)
 {
     int rv;
     int ret;
@@ -80,14 +81,23 @@ void pcscf_rx_send_aar(uint8_t **rx_sid, const char *ip,
     struct session *session = NULL;
     int new;
 
+    test_ue_t *test_ue = NULL;
+    char *ipstr = NULL;
     ogs_paa_t paa;
     ogs_ipsubnet_t ipsub;
 
+    ogs_assert(sess);
+    test_ue = sess->test_ue;
+    ogs_assert(test_ue);
     ogs_assert(rx_sid);
 
-    ogs_assert(ip);
-    rv = ogs_ipsubnet(&ipsub, ip, NULL);
+    ogs_assert(sess->ue_ip.ipv4);
+    ipstr = ogs_ipv4_to_string(sess->ue_ip.addr);
+    ogs_assert(ipstr);
+
+    rv = ogs_ipsubnet(&ipsub, ipstr, NULL);
     ogs_assert(rv == OGS_OK);
+    ogs_free(ipstr);
 
     /* Create the request */
     ret = fd_msg_new(ogs_diam_rx_cmd_aar, MSGFL_ALLOC_ETEID, &req);
@@ -162,6 +172,30 @@ void pcscf_rx_send_aar(uint8_t **rx_sid, const char *ip,
     ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
     ogs_assert(ret == 0);
 
+    /* Set Vendor-Specific-Application-Id AVP */
+    ret = ogs_diam_message_vendor_specific_appid_set(
+            req, OGS_DIAM_RX_APPLICATION_ID);
+    ogs_assert(ret == 0);
+
+    /* Set the AF-Application-Identifier AVP */
+    ret = fd_msg_avp_new(ogs_diam_rx_af_application_identifier, 0, &avp);
+    ogs_assert(ret == 0);
+    val.os.data = (unsigned char *)("IMS Services");
+    val.os.len  = strlen("IMS Services");
+    ret = fd_msg_avp_setvalue(avp, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
+    ogs_assert(ret == 0);
+
+    /* Set the Authroization-Lifetime AVP */
+    ret = fd_msg_avp_new(ogs_diam_authorization_lifetime, 0, &avp);
+    ogs_assert(ret == 0);
+    val.i32 = 7200;
+    ret = fd_msg_avp_setvalue(avp, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
+    ogs_assert(ret == 0);
+
     /* Set Subscription-Id */
     ret = fd_msg_avp_new(ogs_diam_rx_subscription_id, 0, &avp);
     ogs_assert(ret == 0);
@@ -174,11 +208,10 @@ void pcscf_rx_send_aar(uint8_t **rx_sid, const char *ip,
     ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
     ogs_assert(ret == 0);
 
-    #define OGS_DIAM_RX_APP_IMSI_BCD  "001010123456789"
     ret = fd_msg_avp_new(ogs_diam_rx_subscription_id_data, 0, &avpch1);
     ogs_assert(ret == 0);
-    val.os.data = (uint8_t *)OGS_DIAM_RX_APP_IMSI_BCD;
-    val.os.len  = strlen(OGS_DIAM_RX_APP_IMSI_BCD);
+    val.os.data = (uint8_t *)test_ue->imsi;
+    val.os.len  = strlen(test_ue->imsi);
     ret = fd_msg_avp_setvalue (avpch1, &val);
     ogs_assert(ret == 0);
     ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);

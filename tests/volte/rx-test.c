@@ -31,7 +31,6 @@ static void test1_func(abts_case *tc, void *data)
     ogs_pkbuf_t *recvbuf;
     ogs_s1ap_message_t message;
 
-    char *ipstr = NULL;
     uint8_t *rx_sid = NULL;
 
     ogs_nas_5gs_mobile_identity_suci_t mobile_identity_suci;
@@ -366,11 +365,7 @@ static void test1_func(abts_case *tc, void *data)
     ogs_pkbuf_free(recvbuf);
 
     /* Send AA-Request */
-    ogs_assert(sess->ue_ip.ipv4);
-    ipstr = ogs_ipv4_to_string(sess->ue_ip.addr);
-    ogs_assert(ipstr);
-    pcscf_rx_send_aar(&rx_sid, ipstr, 1, 1);
-    ogs_free(ipstr);
+    pcscf_rx_send_aar(&rx_sid, sess, 1, 1);
 
     /* Receive E-RAB Setup Request +
      * Activate dedicated EPS bearer context request */
@@ -407,7 +402,7 @@ static void test1_func(abts_case *tc, void *data)
     ogs_pkbuf_free(recvbuf);
 
     /* Send AA-Request without Flow */
-    pcscf_rx_send_aar(&rx_sid, ipstr, 2, 1);
+    pcscf_rx_send_aar(&rx_sid, sess, 2, 1);
 
     /* Receive E-RAB Modify Request +
      * Modify EPS bearer context request */
@@ -623,7 +618,6 @@ static void test2_func(abts_case *tc, void *data)
     ogs_pkbuf_t *recvbuf;
     ogs_s1ap_message_t message;
 
-    char *ipstr = NULL;
     uint8_t *rx_sid = NULL;
 
     ogs_nas_5gs_mobile_identity_suci_t mobile_identity_suci;
@@ -976,11 +970,7 @@ static void test2_func(abts_case *tc, void *data)
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
 
     /* Send AA-Request */
-    ogs_assert(sess->ue_ip.ipv4);
-    ipstr = ogs_ipv4_to_string(sess->ue_ip.addr);
-    ogs_assert(ipstr);
-    pcscf_rx_send_aar(&rx_sid, ipstr, 0, 1);
-    ogs_free(ipstr);
+    pcscf_rx_send_aar(&rx_sid, sess, 0, 1);
 
     /* Receive downlink NAS transport +
      * Modify EPS bearer context request */

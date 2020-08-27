@@ -27,8 +27,8 @@ extern "C" {
 int pcscf_fd_init(void);
 void pcscf_fd_final(void);
 
-void pcscf_rx_send_aar(uint8_t **rx_sid, const char *ip,
-        int qos_type, int flow_presence);
+void pcscf_rx_send_aar(uint8_t **rx_sid,
+        test_sess_t *sess, int qos_type, int flow_presence);
 void pcscf_rx_send_str(uint8_t *rx_sid);
 
 #ifdef __cplusplus
