@@ -68,7 +68,7 @@ static int pcscf_rx_fb_cb(struct msg **msg, struct avp *avp,
 }
 
 void pcscf_rx_send_aar(uint8_t **rx_sid,
-        test_sess_t *sess, int qos_type, int flow_presence)
+        test_sess_t *sess, int id_type, int qos_type, int flow_presence)
 {
     int rv;
     int ret;
@@ -83,6 +83,7 @@ void pcscf_rx_send_aar(uint8_t **rx_sid,
 
     test_ue_t *test_ue = NULL;
     char *ipstr = NULL;
+    char *sip_uri = NULL;
     ogs_paa_t paa;
     ogs_ipsubnet_t ipsub;
 
@@ -94,6 +95,8 @@ void pcscf_rx_send_aar(uint8_t **rx_sid,
     ogs_assert(sess->ue_ip.ipv4);
     ipstr = ogs_ipv4_to_string(sess->ue_ip.addr);
     ogs_assert(ipstr);
+    sip_uri = ogs_msprintf("sip:%s:40491", ipstr);
+    ogs_assert(sip_uri);
 
     rv = ogs_ipsubnet(&ipsub, ipstr, NULL);
     ogs_assert(rv == OGS_OK);
@@ -202,21 +205,35 @@ void pcscf_rx_send_aar(uint8_t **rx_sid,
 
     ret = fd_msg_avp_new(ogs_diam_rx_subscription_id_type, 0, &avpch1);
     ogs_assert(ret == 0);
-    val.i32 = OGS_DIAM_RX_SUBSCRIPTION_ID_TYPE_END_USER_IMSI;
-    ret = fd_msg_avp_setvalue (avpch1, &val);
+    val.i32 = id_type;
+    ret = fd_msg_avp_setvalue(avpch1, &val);
     ogs_assert(ret == 0);
     ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
     ogs_assert(ret == 0);
 
     ret = fd_msg_avp_new(ogs_diam_rx_subscription_id_data, 0, &avpch1);
     ogs_assert(ret == 0);
-    val.os.data = (uint8_t *)test_ue->imsi;
-    val.os.len  = strlen(test_ue->imsi);
+    if (id_type == OGS_DIAM_RX_SUBSCRIPTION_ID_TYPE_END_USER_IMSI) {
+        val.os.data = (uint8_t *)test_ue->imsi;
+        val.os.len  = strlen(test_ue->imsi);
+    } else if (id_type == OGS_DIAM_RX_SUBSCRIPTION_ID_TYPE_END_USER_SIP_URI) {
+        val.os.data = (uint8_t *)sip_uri;
+        val.os.len  = strlen(sip_uri);
+    }
     ret = fd_msg_avp_setvalue (avpch1, &val);
     ogs_assert(ret == 0);
     ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
     ogs_assert(ret == 0);
 
+    ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
+    ogs_assert(ret == 0);
+
+    /* Set the Reservation-Priority AVP */
+    ret = fd_msg_avp_new(ogs_diam_rx_reservation_priority, 0, &avp);
+    ogs_assert(ret == 0);
+    val.i32 = 0;
+    ret = fd_msg_avp_setvalue(avp, &val);
+    ogs_assert(ret == 0);
     ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
     ogs_assert(ret == 0);
 
@@ -439,6 +456,9 @@ void pcscf_rx_send_aar(uint8_t **rx_sid,
     ogs_assert(pthread_mutex_lock(&ogs_diam_logger_self()->stats_lock) == 0);
     ogs_diam_logger_self()->stats.nb_sent++;
     ogs_assert(pthread_mutex_unlock(&ogs_diam_logger_self()->stats_lock) == 0);
+
+    /* Free string memory */
+    ogs_free(sip_uri);
 }
 
 static void pcscf_rx_aaa_cb(void *data, struct msg **msg)

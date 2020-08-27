@@ -84,6 +84,7 @@ extern struct dict_object *ogs_diam_rx_subscription_id;
 #define OGS_DIAM_RX_SUBSCRIPTION_ID_TYPE_END_USER_NAI           3
 extern struct dict_object *ogs_diam_rx_subscription_id_type;
 extern struct dict_object *ogs_diam_rx_subscription_id_data;
+extern struct dict_object *ogs_diam_rx_reservation_priority;
 extern struct dict_object *ogs_diam_rx_specific_action;
 extern struct dict_object *ogs_diam_rx_framed_ip_address;
 extern struct dict_object *ogs_diam_rx_framed_ipv6_prefix;

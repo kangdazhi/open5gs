@@ -365,7 +365,8 @@ static void test1_func(abts_case *tc, void *data)
     ogs_pkbuf_free(recvbuf);
 
     /* Send AA-Request */
-    pcscf_rx_send_aar(&rx_sid, sess, 1, 1);
+    pcscf_rx_send_aar(&rx_sid, sess,
+            OGS_DIAM_RX_SUBSCRIPTION_ID_TYPE_END_USER_IMSI, 1, 1);
 
     /* Receive E-RAB Setup Request +
      * Activate dedicated EPS bearer context request */
@@ -402,7 +403,8 @@ static void test1_func(abts_case *tc, void *data)
     ogs_pkbuf_free(recvbuf);
 
     /* Send AA-Request without Flow */
-    pcscf_rx_send_aar(&rx_sid, sess, 2, 1);
+    pcscf_rx_send_aar(&rx_sid, sess,
+            OGS_DIAM_RX_SUBSCRIPTION_ID_TYPE_END_USER_IMSI, 2, 1);
 
     /* Receive E-RAB Modify Request +
      * Modify EPS bearer context request */
@@ -970,7 +972,8 @@ static void test2_func(abts_case *tc, void *data)
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
 
     /* Send AA-Request */
-    pcscf_rx_send_aar(&rx_sid, sess, 0, 1);
+    pcscf_rx_send_aar(&rx_sid, sess,
+            OGS_DIAM_RX_SUBSCRIPTION_ID_TYPE_END_USER_IMSI, 0, 1);
 
     /* Receive downlink NAS transport +
      * Modify EPS bearer context request */
