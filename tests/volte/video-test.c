@@ -384,8 +384,8 @@ static void test1_func(abts_case *tc, void *data)
     ogs_pkbuf_free(recvbuf);
 
     /* Send AA-Request */
-    pcscf_rx_send_aar(&rx_sid, sess,
-            OGS_DIAM_RX_SUBSCRIPTION_ID_TYPE_END_USER_SIP_URI, 1, 1);
+    pcscf_rx_send_aar2(&rx_sid, sess,
+            OGS_DIAM_RX_SUBSCRIPTION_ID_TYPE_END_USER_SIP_URI);
 
     /* Receive E-RAB Setup Request +
      * Activate dedicated EPS bearer context request */
