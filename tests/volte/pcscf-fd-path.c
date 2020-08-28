@@ -667,10 +667,10 @@ void pcscf_rx_send_aar2(uint8_t **rx_sid, test_sess_t *sess, int id_type)
 
     ret = fd_msg_avp_new(ogs_diam_rx_flow_description, 0, &avpch2);
     ogs_assert(ret == 0);
-    #define TEST_OGS_DIAM_RX_FLOW_DESC1  \
-        "permit out 17 from 172.20.166.84 to 172.18.128.20 20001"
-    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC1;
-    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC1);
+    #define TEST_OGS_DIAM_RX_FLOW_DESC5  \
+        "permit out 17 from 45.45.0.3 50022 to 45.45.0.5 50026"
+    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC5;
+    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC5);
     ret = fd_msg_avp_setvalue (avpch2, &val);
     ogs_assert(ret == 0);
     ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
@@ -678,10 +678,10 @@ void pcscf_rx_send_aar2(uint8_t **rx_sid, test_sess_t *sess, int id_type)
 
     ret = fd_msg_avp_new(ogs_diam_rx_flow_description, 0, &avpch2);
     ogs_assert(ret == 0);
-    #define TEST_OGS_DIAM_RX_FLOW_DESC2  \
-        "permit in 17 from 172.18.128.20 to 172.20.166.84 20360"
-    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC2;
-    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC2);
+    #define TEST_OGS_DIAM_RX_FLOW_DESC6  \
+        "permit in 17 from 45.45.0.5 50026 to 45.45.0.3 50022"
+    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC6;
+    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC6);
     ret = fd_msg_avp_setvalue (avpch2, &val);
     ogs_assert(ret == 0);
     ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
@@ -689,10 +689,10 @@ void pcscf_rx_send_aar2(uint8_t **rx_sid, test_sess_t *sess, int id_type)
 
     ret = fd_msg_avp_new(ogs_diam_rx_flow_description, 0, &avpch2);
     ogs_assert(ret == 0);
-    #define TEST_OGS_DIAM_RX_FLOW_DESC3  \
-        "permit out 17 from 172.20.166.84 to 172.18.128.20 20002"
-    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC3;
-    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC3);
+    #define TEST_OGS_DIAM_RX_FLOW_DESC7  \
+        "permit out 17 from 45.45.0.3 50023 to 45.45.0.5 50027"
+    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC7;
+    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC7);
     ret = fd_msg_avp_setvalue (avpch2, &val);
     ogs_assert(ret == 0);
     ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
@@ -700,10 +700,10 @@ void pcscf_rx_send_aar2(uint8_t **rx_sid, test_sess_t *sess, int id_type)
 
     ret = fd_msg_avp_new(ogs_diam_rx_flow_description, 0, &avpch2);
     ogs_assert(ret == 0);
-    #define TEST_OGS_DIAM_RX_FLOW_DESC4  \
-        "permit in 17 from 172.18.128.20 to 172.20.166.84 20361"
-    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC4;
-    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC4);
+    #define TEST_OGS_DIAM_RX_FLOW_DESC8  \
+        "permit in 17 from 45.45.0.5 50027 to 45.45.0.3 50023"
+    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC8;
+    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC8);
     ret = fd_msg_avp_setvalue (avpch2, &val);
     ogs_assert(ret == 0);
     ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
@@ -711,7 +711,7 @@ void pcscf_rx_send_aar2(uint8_t **rx_sid, test_sess_t *sess, int id_type)
 
     ret = fd_msg_avp_new(ogs_diam_rx_flow_usage, 0, &avpch2);
     ogs_assert(ret == 0);
-    val.i32 = OGS_DIAM_RX_FLOW_USAGE_RTCP;
+    val.i32 = OGS_DIAM_RX_FLOW_USAGE_NO_INFORMATION;
     ret = fd_msg_avp_setvalue (avpch2, &val);
     ogs_assert(ret == 0);
     ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
@@ -851,10 +851,10 @@ void pcscf_rx_send_aar2(uint8_t **rx_sid, test_sess_t *sess, int id_type)
 
     ret = fd_msg_avp_new(ogs_diam_rx_flow_description, 0, &avpch2);
     ogs_assert(ret == 0);
-    #define TEST_OGS_DIAM_RX_FLOW_DESC1  \
-        "permit out 17 from 172.20.166.84 to 172.18.128.20 20001"
-    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC1;
-    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC1);
+    #define TEST_OGS_DIAM_RX_FLOW_DESC9  \
+        "permit out 17 from 45.45.0.3 60010 to 45.45.0.5 60010"
+    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC9;
+    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC9);
     ret = fd_msg_avp_setvalue (avpch2, &val);
     ogs_assert(ret == 0);
     ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
@@ -862,10 +862,10 @@ void pcscf_rx_send_aar2(uint8_t **rx_sid, test_sess_t *sess, int id_type)
 
     ret = fd_msg_avp_new(ogs_diam_rx_flow_description, 0, &avpch2);
     ogs_assert(ret == 0);
-    #define TEST_OGS_DIAM_RX_FLOW_DESC2  \
-        "permit in 17 from 172.18.128.20 to 172.20.166.84 20360"
-    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC2;
-    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC2);
+    #define TEST_OGS_DIAM_RX_FLOW_DESC10  \
+        "permit in 17 from 45.45.0.5 60010 to 45.45.0.3 60010"
+    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC10;
+    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC10);
     ret = fd_msg_avp_setvalue (avpch2, &val);
     ogs_assert(ret == 0);
     ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
@@ -873,10 +873,10 @@ void pcscf_rx_send_aar2(uint8_t **rx_sid, test_sess_t *sess, int id_type)
 
     ret = fd_msg_avp_new(ogs_diam_rx_flow_description, 0, &avpch2);
     ogs_assert(ret == 0);
-    #define TEST_OGS_DIAM_RX_FLOW_DESC3  \
-        "permit out 17 from 172.20.166.84 to 172.18.128.20 20002"
-    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC3;
-    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC3);
+    #define TEST_OGS_DIAM_RX_FLOW_DESC11  \
+        "permit out 17 from 45.45.0.3 60011 to 45.45.0.5 60011"
+    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC11;
+    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC11);
     ret = fd_msg_avp_setvalue (avpch2, &val);
     ogs_assert(ret == 0);
     ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
@@ -884,10 +884,10 @@ void pcscf_rx_send_aar2(uint8_t **rx_sid, test_sess_t *sess, int id_type)
 
     ret = fd_msg_avp_new(ogs_diam_rx_flow_description, 0, &avpch2);
     ogs_assert(ret == 0);
-    #define TEST_OGS_DIAM_RX_FLOW_DESC4  \
-        "permit in 17 from 172.18.128.20 to 172.20.166.84 20361"
-    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC4;
-    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC4);
+    #define TEST_OGS_DIAM_RX_FLOW_DESC12  \
+        "permit in 17 from 45.45.0.5 60011 to 45.45.0.3 60011"
+    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC12;
+    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC12);
     ret = fd_msg_avp_setvalue (avpch2, &val);
     ogs_assert(ret == 0);
     ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
@@ -895,7 +895,7 @@ void pcscf_rx_send_aar2(uint8_t **rx_sid, test_sess_t *sess, int id_type)
 
     ret = fd_msg_avp_new(ogs_diam_rx_flow_usage, 0, &avpch2);
     ogs_assert(ret == 0);
-    val.i32 = OGS_DIAM_RX_FLOW_USAGE_RTCP;
+    val.i32 = OGS_DIAM_RX_FLOW_USAGE_NO_INFORMATION;
     ret = fd_msg_avp_setvalue (avpch2, &val);
     ogs_assert(ret == 0);
     ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
