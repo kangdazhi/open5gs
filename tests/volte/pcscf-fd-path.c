@@ -1041,6 +1041,64 @@ void pcscf_rx_send_aar2(uint8_t **rx_sid, test_sess_t *sess, int id_type)
         ogs_assert(ret == 0);
     }
 
+    /* Set the Specific-Action AVP */
+    ret = fd_msg_avp_new(ogs_diam_rx_specific_action, 0, &avp);
+    ogs_assert(ret == 0);
+    val.i32 = OGS_DIAM_RX_SPECIFIC_ACTION_CHARGING_CORRELATION_EXCHANGE;
+    ret = fd_msg_avp_setvalue(avp, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_specific_action, 0, &avp);
+    ogs_assert(ret == 0);
+    val.i32 = OGS_DIAM_RX_SPECIFIC_ACTION_INDICATION_OF_LOSS_OF_BEARER;
+    ret = fd_msg_avp_setvalue(avp, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_specific_action, 0, &avp);
+    ogs_assert(ret == 0);
+    val.i32 = OGS_DIAM_RX_SPECIFIC_ACTION_INDICATION_OF_RECOVERY_OF_BEARER;
+    ret = fd_msg_avp_setvalue(avp, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_specific_action, 0, &avp);
+    ogs_assert(ret == 0);
+    val.i32 = OGS_DIAM_RX_SPECIFIC_ACTION_INDICATION_OF_RELEASE_OF_BEARER;
+    ret = fd_msg_avp_setvalue(avp, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_specific_action, 0, &avp);
+    ogs_assert(ret == 0);
+    val.i32 = OGS_DIAM_RX_SPECIFIC_ACTION_INDICATION_OF_ESTABLISHMENT_OF_BEARER;
+    ret = fd_msg_avp_setvalue(avp, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_specific_action, 0, &avp);
+    ogs_assert(ret == 0);
+    val.i32 = OGS_DIAM_RX_SPECIFIC_ACTION_IP_CAN_CHANGE;
+    ret = fd_msg_avp_setvalue(avp, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_specific_action, 0, &avp);
+    ogs_assert(ret == 0);
+    val.i32 = OGS_DIAM_RX_SPECIFIC_ACTION_ACCESS_NETWORK_INFO_REPORT;
+    ret = fd_msg_avp_setvalue(avp, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
+    ogs_assert(ret == 0);
+
+
     ret = clock_gettime(CLOCK_REALTIME, &sess_data->ts);
     ogs_assert(ret == 0);
 

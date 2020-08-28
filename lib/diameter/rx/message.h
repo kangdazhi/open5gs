@@ -85,6 +85,13 @@ extern struct dict_object *ogs_diam_rx_subscription_id;
 extern struct dict_object *ogs_diam_rx_subscription_id_type;
 extern struct dict_object *ogs_diam_rx_subscription_id_data;
 extern struct dict_object *ogs_diam_rx_reservation_priority;
+#define OGS_DIAM_RX_SPECIFIC_ACTION_CHARGING_CORRELATION_EXCHANGE 1
+#define OGS_DIAM_RX_SPECIFIC_ACTION_INDICATION_OF_LOSS_OF_BEARER 2
+#define OGS_DIAM_RX_SPECIFIC_ACTION_INDICATION_OF_RECOVERY_OF_BEARER 3
+#define OGS_DIAM_RX_SPECIFIC_ACTION_INDICATION_OF_RELEASE_OF_BEARER 4
+#define OGS_DIAM_RX_SPECIFIC_ACTION_INDICATION_OF_ESTABLISHMENT_OF_BEARER 5
+#define OGS_DIAM_RX_SPECIFIC_ACTION_IP_CAN_CHANGE 6
+#define OGS_DIAM_RX_SPECIFIC_ACTION_ACCESS_NETWORK_INFO_REPORT 12
 extern struct dict_object *ogs_diam_rx_specific_action;
 extern struct dict_object *ogs_diam_rx_framed_ip_address;
 extern struct dict_object *ogs_diam_rx_framed_ipv6_prefix;
