@@ -68,7 +68,7 @@ static int pcscf_rx_fb_cb(struct msg **msg, struct avp *avp,
 }
 
 void pcscf_rx_send_aar(uint8_t **rx_sid,
-        test_sess_t *sess, int id_type, int qos_type, int flow_presence)
+        test_sess_t *sess, int id_type, int qos_type, int flow_type)
 {
     int rv;
     int ret;
@@ -286,7 +286,8 @@ void pcscf_rx_send_aar(uint8_t **rx_sid,
     ogs_assert(ret == 0);
 
     if (qos_type == 1) {
-        ret = fd_msg_avp_new(ogs_diam_rx_max_requested_bandwidth_dl, 0, &avpch1);
+        ret = fd_msg_avp_new(
+                ogs_diam_rx_max_requested_bandwidth_dl, 0, &avpch1);
         ogs_assert(ret == 0);
         val.i32 = 96000;
         ret = fd_msg_avp_setvalue (avpch1, &val);
@@ -294,7 +295,8 @@ void pcscf_rx_send_aar(uint8_t **rx_sid,
         ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
         ogs_assert(ret == 0);
 
-        ret = fd_msg_avp_new(ogs_diam_rx_max_requested_bandwidth_ul, 0, &avpch1);
+        ret = fd_msg_avp_new(
+                ogs_diam_rx_max_requested_bandwidth_ul, 0, &avpch1);
         ogs_assert(ret == 0);
         val.i32 = 96000;
         ret = fd_msg_avp_setvalue (avpch1, &val);
@@ -318,7 +320,8 @@ void pcscf_rx_send_aar(uint8_t **rx_sid,
         ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
         ogs_assert(ret == 0);
     } else if (qos_type == 2) {
-        ret = fd_msg_avp_new(ogs_diam_rx_max_requested_bandwidth_dl, 0, &avpch1);
+        ret = fd_msg_avp_new(
+                ogs_diam_rx_max_requested_bandwidth_dl, 0, &avpch1);
         ogs_assert(ret == 0);
         val.i32 = 96000;
         ret = fd_msg_avp_setvalue (avpch1, &val);
@@ -326,7 +329,8 @@ void pcscf_rx_send_aar(uint8_t **rx_sid,
         ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
         ogs_assert(ret == 0);
 
-        ret = fd_msg_avp_new(ogs_diam_rx_max_requested_bandwidth_ul, 0, &avpch1);
+        ret = fd_msg_avp_new(
+                ogs_diam_rx_max_requested_bandwidth_ul, 0, &avpch1);
         ogs_assert(ret == 0);
         val.i32 = 96000;
         ret = fd_msg_avp_setvalue (avpch1, &val);
@@ -334,7 +338,8 @@ void pcscf_rx_send_aar(uint8_t **rx_sid,
         ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
         ogs_assert(ret == 0);
 
-        ret = fd_msg_avp_new(ogs_diam_rx_min_requested_bandwidth_dl, 0, &avpch1);
+        ret = fd_msg_avp_new(
+                ogs_diam_rx_min_requested_bandwidth_dl, 0, &avpch1);
         ogs_assert(ret == 0);
         val.i32 = 88000;
         ret = fd_msg_avp_setvalue (avpch1, &val);
@@ -342,16 +347,20 @@ void pcscf_rx_send_aar(uint8_t **rx_sid,
         ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
         ogs_assert(ret == 0);
 
-        ret = fd_msg_avp_new(ogs_diam_rx_min_requested_bandwidth_ul, 0, &avpch1);
+        ret = fd_msg_avp_new(
+                ogs_diam_rx_min_requested_bandwidth_ul, 0, &avpch1);
         ogs_assert(ret == 0);
         val.i32 = 88000;
         ret = fd_msg_avp_setvalue (avpch1, &val);
         ogs_assert(ret == 0);
         ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
         ogs_assert(ret == 0);
+    } else {
+        ogs_fatal("Unknown qos-type[%d]", qos_type);
+        ogs_assert_if_reached();
     }
 
-    if (flow_presence) {
+    if (flow_type == 1) {
         /* Set Media-Sub-Component #1 */
         ret = fd_msg_avp_new(ogs_diam_rx_media_sub_component, 0, &avpch1);
 
@@ -431,6 +440,9 @@ void pcscf_rx_send_aar(uint8_t **rx_sid,
 
         ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
         ogs_assert(ret == 0);
+    } else {
+        ogs_fatal("Unknown flow-type[%d]", flow_type);
+        ogs_assert_if_reached();
     }
 
     ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
