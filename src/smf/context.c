@@ -1084,7 +1084,7 @@ smf_bearer_t *smf_qos_flow_add(smf_sess_t *sess)
 
     ogs_list_init(&qos_flow->pf_list);
 
-    dl_pdr = ogs_pfcp_pdr_add(&qos_flow->pfcp);
+    dl_pdr = ogs_pfcp_pdr_add(&sess->pfcp);
     ogs_assert(dl_pdr);
     dl_pdr->id = OGS_NEXT_ID(sess->pdr_id, 1, OGS_MAX_NUM_OF_PDR+1);
     dl_pdr->src_if = OGS_PFCP_INTERFACE_CORE;
@@ -1092,7 +1092,9 @@ smf_bearer_t *smf_qos_flow_add(smf_sess_t *sess)
     if (strlen(sess->pdn.apn))
         dl_pdr->apn = ogs_strdup(sess->pdn.apn);
 
-    ul_pdr = ogs_pfcp_pdr_add(&qos_flow->pfcp);
+    qos_flow->dl_pdr = dl_pdr;
+
+    ul_pdr = ogs_pfcp_pdr_add(&sess->pfcp);
     ogs_assert(ul_pdr);
     ul_pdr->id = OGS_NEXT_ID(sess->pdr_id, 1, OGS_MAX_NUM_OF_PDR+1);
     ul_pdr->src_if = OGS_PFCP_INTERFACE_ACCESS;
@@ -1113,23 +1115,31 @@ smf_bearer_t *smf_qos_flow_add(smf_sess_t *sess)
     } else
         ogs_assert_if_reached();
 
-    dl_far = ogs_pfcp_far_add(&qos_flow->pfcp);
+    qos_flow->ul_pdr = ul_pdr;
+
+    dl_far = ogs_pfcp_far_add(&sess->pfcp);
     ogs_assert(dl_far);
     dl_far->id = OGS_NEXT_ID(sess->far_id, 1, OGS_MAX_NUM_OF_FAR+1);
     dl_far->dst_if = OGS_PFCP_INTERFACE_ACCESS;
     ogs_pfcp_pdr_associate_far(dl_pdr, dl_far);
 
-    ul_far = ogs_pfcp_far_add(&qos_flow->pfcp);
+    qos_flow->dl_far = dl_far;
+
+    ul_far = ogs_pfcp_far_add(&sess->pfcp);
     ogs_assert(ul_far);
     ul_far->id = OGS_NEXT_ID(sess->far_id, 1, OGS_MAX_NUM_OF_FAR+1);
     ul_far->dst_if = OGS_PFCP_INTERFACE_CORE;
     ogs_pfcp_pdr_associate_far(ul_pdr, ul_far);
 
-    qer = ogs_pfcp_qer_add(&qos_flow->pfcp);
+    qos_flow->ul_far = ul_far;
+
+    qer = ogs_pfcp_qer_add(&sess->pfcp);
     ogs_assert(qer);
     qer->id = OGS_NEXT_ID(sess->qer_id, 1, OGS_MAX_NUM_OF_QER+1);
     ogs_pfcp_pdr_associate_qer(dl_pdr, qer);
     ogs_pfcp_pdr_associate_qer(ul_pdr, qer);
+
+    qos_flow->qer = qer;
 
     /* Allocate QFI */
     qer->qfi = OGS_NEXT_ID(sess->qos_flow_identifier, 1, OGS_MAX_QOS_FLOW_ID+1);
@@ -1178,7 +1188,7 @@ smf_bearer_t *smf_bearer_add(smf_sess_t *sess)
 
     ogs_list_init(&bearer->pf_list);
 
-    dl_pdr = ogs_pfcp_pdr_add(&bearer->pfcp);
+    dl_pdr = ogs_pfcp_pdr_add(&sess->pfcp);
     ogs_assert(dl_pdr);
     dl_pdr->id = OGS_NEXT_ID(sess->pdr_id, 1, OGS_MAX_NUM_OF_PDR+1);
     dl_pdr->src_if = OGS_PFCP_INTERFACE_CORE;
@@ -1186,7 +1196,9 @@ smf_bearer_t *smf_bearer_add(smf_sess_t *sess)
     if (strlen(sess->pdn.apn))
         dl_pdr->apn = ogs_strdup(sess->pdn.apn);
 
-    ul_pdr = ogs_pfcp_pdr_add(&bearer->pfcp);
+    bearer->dl_pdr = dl_pdr;
+
+    ul_pdr = ogs_pfcp_pdr_add(&sess->pfcp);
     ogs_assert(ul_pdr);
     ul_pdr->id = OGS_NEXT_ID(sess->pdr_id, 1, OGS_MAX_NUM_OF_PDR+1);
     ul_pdr->src_if = OGS_PFCP_INTERFACE_ACCESS;
@@ -1207,17 +1219,23 @@ smf_bearer_t *smf_bearer_add(smf_sess_t *sess)
     } else
         ogs_assert_if_reached();
 
-    dl_far = ogs_pfcp_far_add(&bearer->pfcp);
+    bearer->ul_pdr = ul_pdr;
+
+    dl_far = ogs_pfcp_far_add(&sess->pfcp);
     ogs_assert(dl_far);
     dl_far->id = OGS_NEXT_ID(sess->far_id, 1, OGS_MAX_NUM_OF_FAR+1);
     dl_far->dst_if = OGS_PFCP_INTERFACE_ACCESS;
     ogs_pfcp_pdr_associate_far(dl_pdr, dl_far);
 
-    ul_far = ogs_pfcp_far_add(&bearer->pfcp);
+    bearer->dl_far = dl_far;
+
+    ul_far = ogs_pfcp_far_add(&sess->pfcp);
     ogs_assert(ul_far);
     ul_far->id = OGS_NEXT_ID(sess->far_id, 1, OGS_MAX_NUM_OF_FAR+1);
     ul_far->dst_if = OGS_PFCP_INTERFACE_CORE;
     ogs_pfcp_pdr_associate_far(ul_pdr, ul_far);
+
+    bearer->ul_far = ul_far;
 
     ogs_assert(sess->pfcp_node);
     resource = ogs_pfcp_gtpu_resource_find(
@@ -1262,7 +1280,13 @@ int smf_bearer_remove(smf_bearer_t *bearer)
     ogs_assert(bearer->sess);
 
     ogs_list_remove(&bearer->sess->bearer_list, bearer);
-    ogs_pfcp_sess_clear(&bearer->pfcp);
+
+    ogs_pfcp_pdr_remove(bearer->dl_pdr);
+    ogs_pfcp_pdr_remove(bearer->ul_pdr);
+    ogs_pfcp_far_remove(bearer->dl_far);
+    ogs_pfcp_far_remove(bearer->ul_far);
+    if (bearer->qer)
+        ogs_pfcp_qer_remove(bearer->qer);
 
     if (bearer->name)
         ogs_free(bearer->name);

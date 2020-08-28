@@ -131,10 +131,13 @@ typedef struct smf_ue_s {
             smf_sess_remove(__sESS); \
     } while(0)
 
+#define SMF_SESS(pfcp_sess) ogs_container_of(pfcp_sess, smf_sess_t, pfcp)
 typedef struct smf_sess_s {
     ogs_sbi_object_t sbi;
     uint32_t        index;          /**< An index of this node */
     ogs_fsm_t       sm;             /* A state machine */
+
+    ogs_pfcp_sess_t pfcp;           /* PFCP session context */
 
     uint32_t        smf_n4_teid;    /* SMF-N4-TEID is derived from INDEX */
     uint32_t        sgw_s5c_teid;   /* SGW-S5C-TEID is received from SGW */
@@ -227,12 +230,15 @@ typedef struct smf_sess_s {
     smf_ue_t *smf_ue;
 } smf_sess_t;
 
-#define SMF_BEARER(pfcp_sess) ogs_container_of(pfcp_sess, smf_bearer_t, pfcp)
 typedef struct smf_bearer_s {
     ogs_lnode_t     lnode;          /**< A node of list_t */
     uint32_t        index;
 
-    ogs_pfcp_sess_t pfcp;           /* PFCP session context */
+    ogs_pfcp_pdr_t  *dl_pdr;
+    ogs_pfcp_pdr_t  *ul_pdr;
+    ogs_pfcp_far_t  *dl_far;
+    ogs_pfcp_far_t  *ul_far;
+    ogs_pfcp_qer_t  *qer;
 
     uint8_t         qfi;            /* 5GC */
     uint8_t         ebi;            /* EPC */
