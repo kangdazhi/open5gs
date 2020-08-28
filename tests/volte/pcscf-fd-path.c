@@ -1098,6 +1098,23 @@ void pcscf_rx_send_aar2(uint8_t **rx_sid, test_sess_t *sess, int id_type)
     ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
     ogs_assert(ret == 0);
 
+    /* Set the Auth-Grace-Period AVP */
+    ret = fd_msg_avp_new(ogs_diam_auth_grace_period, 0, &avp);
+    ogs_assert(ret == 0);
+    val.i32 = 0;
+    ret = fd_msg_avp_setvalue(avp, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
+    ogs_assert(ret == 0);
+
+    /* Set the Session-Timeout AVP */
+    ret = fd_msg_avp_new(ogs_diam_session_timeout, 0, &avp);
+    ogs_assert(ret == 0);
+    val.i32 = 7200;
+    ret = fd_msg_avp_setvalue(avp, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
+    ogs_assert(ret == 0);
 
     ret = clock_gettime(CLOCK_REALTIME, &sess_data->ts);
     ogs_assert(ret == 0);
