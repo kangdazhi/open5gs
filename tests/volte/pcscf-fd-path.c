@@ -763,9 +763,7 @@ void pcscf_rx_send_aar2(uint8_t **rx_sid, test_sess_t *sess, int id_type)
     ret = fd_msg_avp_new(ogs_diam_rx_codec_data, 0, &avpch1);
     ogs_assert(ret == 0);
     #define TEST_OGS_DIAM_RX_CODEC_DATA1 \
-        "downlink\n" \
-        "offer\n" \
-        "m=audio 50026 RTP/AVP 104 102 96 97\r\n" \
+        "downlink\noffer\nm=audio 50026 RTP/AVP 104 102 96 97\r\n" \
         "b=AS:41\r\n" \
         "b=RS:600\r\n" \
         "b=RR:2000\r\n" \
@@ -812,6 +810,193 @@ void pcscf_rx_send_aar2(uint8_t **rx_sid, test_sess_t *sess, int id_type)
         "a=ptime:20\r\n"
     val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_CODEC_DATA2;
     val.os.len  = strlen(TEST_OGS_DIAM_RX_CODEC_DATA2) + 1;
+    ret = fd_msg_avp_setvalue (avpch1, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_flow_status, 0, &avpch1);
+    ogs_assert(ret == 0);
+    val.i32 = OGS_DIAM_RX_FLOW_STATUS_ENABLED;
+    ret = fd_msg_avp_setvalue (avpch1, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_add(req, MSG_BRW_LAST_CHILD, avp);
+    ogs_assert(ret == 0);
+
+    /* Set Media-Component-Description #2 */
+    ret = fd_msg_avp_new(ogs_diam_rx_media_component_description, 0, &avp);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_media_component_number, 0, &avpch1);
+    ogs_assert(ret == 0);
+    val.i32 = 2;
+    ret = fd_msg_avp_setvalue (avpch1, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
+    ogs_assert(ret == 0);
+
+    /* Set Media-Sub-Component #1 */
+    ret = fd_msg_avp_new(ogs_diam_rx_media_sub_component, 0, &avpch1);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_flow_number, 0, &avpch2);
+    ogs_assert(ret == 0);
+    val.i32 = 2;
+    ret = fd_msg_avp_setvalue (avpch2, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_flow_description, 0, &avpch2);
+    ogs_assert(ret == 0);
+    #define TEST_OGS_DIAM_RX_FLOW_DESC1  \
+        "permit out 17 from 172.20.166.84 to 172.18.128.20 20001"
+    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC1;
+    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC1);
+    ret = fd_msg_avp_setvalue (avpch2, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_flow_description, 0, &avpch2);
+    ogs_assert(ret == 0);
+    #define TEST_OGS_DIAM_RX_FLOW_DESC2  \
+        "permit in 17 from 172.18.128.20 to 172.20.166.84 20360"
+    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC2;
+    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC2);
+    ret = fd_msg_avp_setvalue (avpch2, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_flow_description, 0, &avpch2);
+    ogs_assert(ret == 0);
+    #define TEST_OGS_DIAM_RX_FLOW_DESC3  \
+        "permit out 17 from 172.20.166.84 to 172.18.128.20 20002"
+    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC3;
+    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC3);
+    ret = fd_msg_avp_setvalue (avpch2, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_flow_description, 0, &avpch2);
+    ogs_assert(ret == 0);
+    #define TEST_OGS_DIAM_RX_FLOW_DESC4  \
+        "permit in 17 from 172.18.128.20 to 172.20.166.84 20361"
+    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_FLOW_DESC4;
+    val.os.len  = strlen(TEST_OGS_DIAM_RX_FLOW_DESC4);
+    ret = fd_msg_avp_setvalue (avpch2, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_flow_usage, 0, &avpch2);
+    ogs_assert(ret == 0);
+    val.i32 = OGS_DIAM_RX_FLOW_USAGE_RTCP;
+    ret = fd_msg_avp_setvalue (avpch2, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avpch1, MSG_BRW_LAST_CHILD, avpch2);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_media_type, 0, &avpch1);
+    ogs_assert(ret == 0);
+    val.i32 = OGS_DIAM_RX_MEDIA_TYPE_VIDEO;
+    ret = fd_msg_avp_setvalue (avpch1, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_max_requested_bandwidth_dl, 0, &avpch1);
+    ogs_assert(ret == 0);
+    val.i32 = 401000;
+    ret = fd_msg_avp_setvalue (avpch1, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_max_requested_bandwidth_ul, 0, &avpch1);
+    ogs_assert(ret == 0);
+    val.i32 = 401000;
+    ret = fd_msg_avp_setvalue (avpch1, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_rs_bandwidth, 0, &avpch1);
+    ogs_assert(ret == 0);
+    val.i32 = 600;
+    ret = fd_msg_avp_setvalue (avpch1, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_rr_bandwidth, 0, &avpch1);
+    ogs_assert(ret == 0);
+    val.i32 = 2000;
+    ret = fd_msg_avp_setvalue (avpch1, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_codec_data, 0, &avpch1);
+    ogs_assert(ret == 0);
+    #define TEST_OGS_DIAM_RX_CODEC_DATA3 \
+        "downlink\noffer\nm=video 60010 RTP/AVP 114 113\r\n" \
+        "b=AS:401\r\n" \
+        "b=RS:600\r\n" \
+        "b=RR:2000\r\n" \
+        "a=rtpmap:114 H264/90000\r\n" \
+        "a=fmtp:114 profile-level-id=42C00C;packetization-mode=1;sar-understood=16;sar-supported=1;sprop-parameter-sets=Z0LADNoPCmgG0KE1,aM4G4g==\r\n" \
+        "a=rtpmap:113 H264/90000\r\n" \
+        "a=fmtp:113 profile-level-id=42C00C;packetization-mode=0;sar-understood=16;sar-supported=1;sprop-parameter-sets=Z0LADNoPCmgG0KE1,aM4G4g==\r\n" \
+        "a=curr:qos local none\r\n" \
+        "a=curr:qos remote none\r\n" \
+        "a=des:qos mandatory local sendrecv\r\n" \
+        "a=des:qos optional remote sendrecv\r\n" \
+        "a=rtcp-fb:* nack\r\n" \
+        "a=rtcp-fb:* nack pli\r\n" \
+        "a=rtcp-fb:* ccm fir\r\n" \
+        "a=rtcp-fb:* ccm tmmbr\r\n" \
+        "a=sendrecv\r\n" \
+        "a=tcap:1 RTP/AVPF\r\n" \
+        "a=pcfg:1 t=1\r\n" \
+        "a=extmap:2 urn:3gpp:video-orientation\r\n"
+    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_CODEC_DATA3;
+    val.os.len  = strlen(TEST_OGS_DIAM_RX_CODEC_DATA3) + 1;
+    ret = fd_msg_avp_setvalue (avpch1, &val);
+    ogs_assert(ret == 0);
+    ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
+    ogs_assert(ret == 0);
+
+    ret = fd_msg_avp_new(ogs_diam_rx_codec_data, 0, &avpch1);
+    ogs_assert(ret == 0);
+    #define TEST_OGS_DIAM_RX_CODEC_DATA4 \
+        "uplink\nanswer\nm=video 60010 RTP/AVPF 114\r\n" \
+        "b=AS:401\r\n" \
+        "b=RS:600\r\n" \
+        "b=RR:2000\r\n" \
+        "a=rtpmap:114 H264/90000\r\n" \
+        "a=fmtp:114 profile-level-id=42C00C;packetization-mode=1;sar-understood=16;sar-supported=1;sprop-parameter-sets=Z0LADNoPCmgG0KE1,aM4G4g==\r\n" \
+        "a=curr:qos local none\r\n" \
+        "a=curr:qos remote none\r\n" \
+        "a=des:qos mandatory local sendrecv\r\n" \
+        "a=des:qos mandatory remote sendrecv\r\n" \
+        "a=conf:qos remote sendrecv\r\n" \
+        "a=rtcp-fb:* nack\r\n" \
+        "a=rtcp-fb:* nack pli\r\n" \
+        "a=rtcp-fb:* ccm fir\r\n" \
+        "a=rtcp-fb:* ccm tmmbr\r\n" \
+        "a=sendrecv\r\n" \
+        "a=extmap:2 urn:3gpp:video-orientation\r\n" \
+        "a=acfg:1 t=1\r\n"
+    val.os.data = (uint8_t *)TEST_OGS_DIAM_RX_CODEC_DATA4;
+    val.os.len  = strlen(TEST_OGS_DIAM_RX_CODEC_DATA4) + 1;
     ret = fd_msg_avp_setvalue (avpch1, &val);
     ogs_assert(ret == 0);
     ret = fd_msg_avp_add (avp, MSG_BRW_LAST_CHILD, avpch1);
