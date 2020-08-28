@@ -93,7 +93,10 @@ static void diam_log_func(int printlevel,
     char buffer[OGS_HUGE_LEN*2];
     int  ret = 0;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
     ret = ogs_vsnprintf(buffer, OGS_HUGE_LEN*2, format, ap);
+#pragma GCC diagnostic pop
     if (ret < 0 || ret > OGS_HUGE_LEN*2) {
         ogs_error("vsnprintf() failed[ret=%d]", ret);
         return;
