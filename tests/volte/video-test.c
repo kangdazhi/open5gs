@@ -393,9 +393,30 @@ static void test1_func(abts_case *tc, void *data)
     ABTS_PTR_NOTNULL(tc, recvbuf);
     tests1ap_recv(test_ue, recvbuf);
 
-#if 0
+    /* Receive E-RAB Setup Request +
+     * Activate dedicated EPS bearer context request */
+    recvbuf = testenb_s1ap_read(s1ap);
+    ABTS_PTR_NOTNULL(tc, recvbuf);
+    tests1ap_recv(test_ue, recvbuf);
+
     /* Send E-RAB Setup Response */
     bearer = test_bearer_find_by_ue_ebi(test_ue, 7);
+    ogs_assert(bearer);
+    sendbuf = test_s1ap_build_e_rab_setup_response(bearer);
+    ABTS_PTR_NOTNULL(tc, sendbuf);
+    rv = testenb_s1ap_send(s1ap, sendbuf);
+    ABTS_INT_EQUAL(tc, OGS_OK, rv);
+
+    /* Send Activate dedicated EPS bearer context accept */
+    esmbuf = testesm_build_activate_dedicated_eps_bearer_context_accept(bearer);
+    ABTS_PTR_NOTNULL(tc, esmbuf);
+    sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, esmbuf);
+    ABTS_PTR_NOTNULL(tc, sendbuf);
+    rv = testenb_s1ap_send(s1ap, sendbuf);
+    ABTS_INT_EQUAL(tc, OGS_OK, rv);
+
+    /* Send E-RAB Setup Response */
+    bearer = test_bearer_find_by_ue_ebi(test_ue, 8);
     ogs_assert(bearer);
     sendbuf = test_s1ap_build_e_rab_setup_response(bearer);
     ABTS_PTR_NOTNULL(tc, sendbuf);
@@ -414,6 +435,8 @@ static void test1_func(abts_case *tc, void *data)
     ogs_msleep(100);
 
     /* Send GTP-U ICMP Packet */
+    bearer = test_bearer_find_by_ue_ebi(test_ue, 7);
+    ogs_assert(bearer);
     rv = test_gtpu_send_ping(gtpu, bearer, TEST_PING_IPV4);
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
 
@@ -421,119 +444,6 @@ static void test1_func(abts_case *tc, void *data)
     recvbuf = test_gtpu_read(gtpu);
     ABTS_PTR_NOTNULL(tc, recvbuf);
     ogs_pkbuf_free(recvbuf);
-
-    /* Send AA-Request without Flow */
-    pcscf_rx_send_aar(&rx_sid, ipstr,
-            OGS_DIAM_RX_SUBSCRIPTION_ID_TYPE_END_USER_IMSI, 2, 1);
-
-    /* Receive E-RAB Modify Request +
-     * Modify EPS bearer context request */
-    recvbuf = testenb_s1ap_read(s1ap);
-    ABTS_PTR_NOTNULL(tc, recvbuf);
-    tests1ap_recv(test_ue, recvbuf);
-
-    /* Send E-RAB Modify Response */
-    sendbuf = test_s1ap_build_e_rab_modify_response(bearer);
-    ABTS_PTR_NOTNULL(tc, sendbuf);
-    rv = testenb_s1ap_send(s1ap, sendbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
-
-    /* Send Modify EPS bearer context accept */
-    esmbuf = testesm_build_modify_eps_bearer_context_accept(bearer);
-    ABTS_PTR_NOTNULL(tc, esmbuf);
-    sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, esmbuf);
-    ABTS_PTR_NOTNULL(tc, sendbuf);
-    rv = testenb_s1ap_send(s1ap, sendbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
-
-    /* Send Bearer resource allocation request */
-    sess->pti = 6;
-    esmbuf = testesm_build_bearer_resource_allocation_request(bearer);
-    ABTS_PTR_NOTNULL(tc, esmbuf);
-    sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, esmbuf);
-    ABTS_PTR_NOTNULL(tc, sendbuf);
-    rv = testenb_s1ap_send(s1ap, sendbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
-
-    /* Receive Bearer resource allocation reject */
-    recvbuf = testenb_s1ap_read(s1ap);
-    ABTS_PTR_NOTNULL(tc, recvbuf);
-    tests1ap_recv(test_ue, recvbuf);
-
-    /* Send Bearer resource modification request */
-    sess->pti = 7;
-    esmbuf = testesm_build_bearer_resource_modification_request(
-            bearer, OGS_GTP_TFT_CODE_NO_TFT_OPERATION, 0, 0);
-    ABTS_PTR_NOTNULL(tc, esmbuf);
-    sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, esmbuf);
-    ABTS_PTR_NOTNULL(tc, sendbuf);
-    rv = testenb_s1ap_send(s1ap, sendbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
-
-    /* Receive Bearer resource modification reject */
-    recvbuf = testenb_s1ap_read(s1ap);
-    ABTS_PTR_NOTNULL(tc, recvbuf);
-    tests1ap_recv(test_ue, recvbuf);
-
-    /* Send Bearer resource modification request */
-    sess->pti = 8;
-    esmbuf = testesm_build_bearer_resource_modification_request(
-            bearer, OGS_GTP_TFT_CODE_ADD_PACKET_FILTERS_TO_EXISTING_TFT, 1, 0);
-    ABTS_PTR_NOTNULL(tc, esmbuf);
-    sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, esmbuf);
-    ABTS_PTR_NOTNULL(tc, sendbuf);
-    rv = testenb_s1ap_send(s1ap, sendbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
-
-    /* Receive E-RAB Modify Request +
-     * Modify EPS bearer context request */
-    recvbuf = testenb_s1ap_read(s1ap);
-    ABTS_PTR_NOTNULL(tc, recvbuf);
-    tests1ap_recv(test_ue, recvbuf);
-
-    /* Send Modify EPS bearer context accept */
-    esmbuf = testesm_build_modify_eps_bearer_context_accept(bearer);
-    ABTS_PTR_NOTNULL(tc, esmbuf);
-    sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, esmbuf);
-    ABTS_PTR_NOTNULL(tc, sendbuf);
-    rv = testenb_s1ap_send(s1ap, sendbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
-
-    /* Send E-RAB Modify Response */
-    sendbuf = test_s1ap_build_e_rab_modify_response(bearer);
-    ABTS_PTR_NOTNULL(tc, sendbuf);
-    rv = testenb_s1ap_send(s1ap, sendbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
-
-    /* Send Bearer resource modification request */
-    sess->pti = 9;
-    esmbuf = testesm_build_bearer_resource_modification_request(
-            bearer, OGS_GTP_TFT_CODE_REPLACE_PACKET_FILTERS_IN_EXISTING, 0, 0);
-    ABTS_PTR_NOTNULL(tc, esmbuf);
-    sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, esmbuf);
-    ABTS_PTR_NOTNULL(tc, sendbuf);
-    rv = testenb_s1ap_send(s1ap, sendbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
-
-    /* Receive E-RAB Modify Request +
-     * Modify EPS bearer context request */
-    recvbuf = testenb_s1ap_read(s1ap);
-    ABTS_PTR_NOTNULL(tc, recvbuf);
-    tests1ap_recv(test_ue, recvbuf);
-
-    /* Send E-RAB Modify Response */
-    sendbuf = test_s1ap_build_e_rab_modify_response(bearer);
-    ABTS_PTR_NOTNULL(tc, sendbuf);
-    rv = testenb_s1ap_send(s1ap, sendbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
-
-    /* Send Modify EPS bearer context accept */
-    esmbuf = testesm_build_modify_eps_bearer_context_accept(bearer);
-    ABTS_PTR_NOTNULL(tc, esmbuf);
-    sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, esmbuf);
-    ABTS_PTR_NOTNULL(tc, sendbuf);
-    rv = testenb_s1ap_send(s1ap, sendbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
 
     /* Send Bearer resource modification request */
     sess->pti = 10;
@@ -545,30 +455,6 @@ static void test1_func(abts_case *tc, void *data)
     ABTS_PTR_NOTNULL(tc, sendbuf);
     rv = testenb_s1ap_send(s1ap, sendbuf);
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
-
-    /* Receive E-RAB Modify Request +
-     * Modify EPS bearer context request */
-    recvbuf = testenb_s1ap_read(s1ap);
-    ABTS_PTR_NOTNULL(tc, recvbuf);
-    tests1ap_recv(test_ue, recvbuf);
-
-    /* Send E-RAB Modify Response */
-    sendbuf = test_s1ap_build_e_rab_modify_response(bearer);
-    ABTS_PTR_NOTNULL(tc, sendbuf);
-    rv = testenb_s1ap_send(s1ap, sendbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
-
-    /* Send Modify EPS bearer context accept */
-    esmbuf = testesm_build_modify_eps_bearer_context_accept(bearer);
-    ABTS_PTR_NOTNULL(tc, esmbuf);
-    sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, esmbuf);
-    ABTS_PTR_NOTNULL(tc, sendbuf);
-    rv = testenb_s1ap_send(s1ap, sendbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
-
-    /* Send Session-Termination-Request */
-    pcscf_rx_send_str(rx_sid);
-
     /* Receive E-RAB Release Command +
      * Dectivate EPS bearer context request */
     recvbuf = testenb_s1ap_read(s1ap);
@@ -589,26 +475,32 @@ static void test1_func(abts_case *tc, void *data)
     rv = testenb_s1ap_send(s1ap, sendbuf);
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
 
-    /* Send Detach Request */
-    emmbuf = testemm_build_detach_request(test_ue, 1);
-    ABTS_PTR_NOTNULL(tc, emmbuf);
-    sendbuf = test_s1ap_build_initial_ue_message(
-            test_ue, emmbuf, S1AP_RRC_Establishment_Cause_mo_Signalling, true);
-    ABTS_PTR_NOTNULL(tc, sendbuf);
-    rv = testenb_s1ap_send(s1ap, sendbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
+    ogs_msleep(100);
 
-    /* Receive UE Context Release Command */
+    /* Send Session-Termination-Request */
+    pcscf_rx_send_str(rx_sid);
+
+    /* Receive E-RAB Release Command +
+     * Dectivate EPS bearer context request */
     recvbuf = testenb_s1ap_read(s1ap);
     ABTS_PTR_NOTNULL(tc, recvbuf);
     tests1ap_recv(test_ue, recvbuf);
 
-    /* Send UE Context Release Complete */
-    sendbuf = test_s1ap_build_ue_context_release_complete(test_ue);
+    /* Send E-RAB Release Response */
+    bearer = test_bearer_find_by_ue_ebi(test_ue, 8);
+    ogs_assert(bearer);
+    sendbuf = test_s1ap_build_e_rab_release_response(bearer);
     ABTS_PTR_NOTNULL(tc, sendbuf);
     rv = testenb_s1ap_send(s1ap, sendbuf);
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
-#endif
+
+    /* Send Deactivate EPS bearer context accept */
+    esmbuf = testesm_build_deactivate_eps_bearer_context_accept(bearer);
+    ABTS_PTR_NOTNULL(tc, esmbuf);
+    sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, esmbuf);
+    ABTS_PTR_NOTNULL(tc, sendbuf);
+    rv = testenb_s1ap_send(s1ap, sendbuf);
+    ABTS_INT_EQUAL(tc, OGS_OK, rv);
 
     ogs_msleep(300);
 

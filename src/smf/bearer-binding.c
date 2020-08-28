@@ -323,13 +323,12 @@ void smf_bearer_binding(smf_sess_t *sess)
 
         } else if (pcc_rule->type == OGS_PCC_RULE_TYPE_REMOVE) {
             bearer = smf_bearer_find_by_name(sess, pcc_rule->name);
-            ogs_assert(bearer);
 
             if (!bearer) {
                 ogs_warn("No need to send 'Delete Bearer Request'");
                 ogs_warn("  - Bearer[Name:%s] has already been removed.",
                         pcc_rule->name);
-                return;
+                continue;
             }
 
             memset(&h, 0, sizeof(ogs_gtp_header_t));
