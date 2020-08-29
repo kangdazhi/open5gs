@@ -134,10 +134,10 @@ void smf_s5c_handle_create_session_request(
     memcpy(&sess->e_tai, &uli.tai, sizeof(sess->e_tai));
     memcpy(&sess->e_cgi, &uli.e_cgi, sizeof(sess->e_cgi));
 
-    /* Select UPF based on UE Location Information */
+    /* Select PGW based on UE Location Information */
     smf_sess_select_upf(sess);
 
-    /* Check if selected UPF is associated with SMF */
+    /* Check if selected PGW is associated with SMF */
     ogs_assert(sess->pfcp_node);
     if (!OGS_FSM_CHECK(&sess->pfcp_node->sm, smf_pfcp_state_associated)) {
         ogs_gtp_send_error_message(xact, sess ? sess->sgw_s5c_teid : 0,
@@ -183,8 +183,8 @@ void smf_s5c_handle_create_session_request(
 
     ogs_debug("    SGW_S5C_TEID[0x%x] SMF_N4_TEID[0x%x]",
             sess->sgw_s5c_teid, sess->smf_n4_teid);
-    ogs_debug("    SGW_S5U_TEID[0x%x] UPF_S5U_TEID[0x%x]",
-            bearer->sgw_s5u_teid, bearer->upf_s5u_teid);
+    ogs_debug("    SGW_S5U_TEID[0x%x] PGW_S5U_TEID[0x%x]",
+            bearer->sgw_s5u_teid, bearer->pgw_s5u_teid);
 
     decoded = ogs_gtp_parse_bearer_qos(&bearer_qos,
         &req->bearer_contexts_to_be_created.bearer_level_qos);
@@ -273,7 +273,7 @@ void smf_s5c_handle_create_bearer_response(
         ogs_gtp_create_bearer_response_t *rsp)
 {
     int rv;
-    ogs_gtp_f_teid_t *sgw_s5u_teid, *upf_s5u_teid;
+    ogs_gtp_f_teid_t *sgw_s5u_teid, *pgw_s5u_teid;
     smf_bearer_t *bearer = NULL;
     ogs_pfcp_far_t *dl_far = NULL;
 
@@ -320,12 +320,12 @@ void smf_s5c_handle_create_bearer_response(
         return;
     }
 
-    /* Correlate with UPF-S5U-TEID */
-    upf_s5u_teid = rsp->bearer_contexts.s5_s8_u_pgw_f_teid.data;
-    ogs_assert(upf_s5u_teid);
+    /* Correlate with PGW-S5U-TEID */
+    pgw_s5u_teid = rsp->bearer_contexts.s5_s8_u_pgw_f_teid.data;
+    ogs_assert(pgw_s5u_teid);
 
-    /* Find the Bearer by UPF-S5U-TEID */
-    bearer = smf_bearer_find_by_upf_s5u_teid(be32toh(upf_s5u_teid->teid));
+    /* Find the Bearer by PGW-S5U-TEID */
+    bearer = smf_bearer_find_by_pgw_s5u_teid(be32toh(pgw_s5u_teid->teid));
     ogs_assert(bearer);
 
     /* Set EBI */
