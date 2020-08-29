@@ -576,7 +576,6 @@ static void test1_func(abts_case *tc, void *data)
     /* DELAY is needed in dedicated EPS bearer */
     ogs_msleep(100);
 
-#if 0
     /* Send GTP-U ICMP Packet */
     bearer = test_bearer_find_by_ue_ebi(test_ue, 9);
     ogs_assert(bearer);
@@ -588,8 +587,21 @@ static void test1_func(abts_case *tc, void *data)
     ABTS_PTR_NOTNULL(tc, recvbuf);
     ogs_pkbuf_free(recvbuf);
 
+    /* Send GTP-U ICMP Packet */
+    bearer = test_bearer_find_by_ue_ebi(test_ue, 10);
+    ogs_assert(bearer);
+    rv = test_gtpu_send_ping(gtpu, bearer, TEST_PING_IPV4);
+    ABTS_INT_EQUAL(tc, OGS_OK, rv);
+
+    /* Receive GTP-U ICMP Packet */
+    recvbuf = test_gtpu_read(gtpu);
+    ABTS_PTR_NOTNULL(tc, recvbuf);
+    ogs_pkbuf_free(recvbuf);
+
     /* Send Bearer resource modification request */
     sess->pti = 20;
+    bearer = test_bearer_find_by_ue_ebi(test_ue, 9);
+    ogs_assert(bearer);
     esmbuf = testesm_build_bearer_resource_modification_request(
             bearer, OGS_GTP_TFT_CODE_DELETE_PACKET_FILTERS_FROM_EXISTING, 0,
             ESM_CAUSE_REGULAR_DEACTIVATION);
@@ -614,6 +626,8 @@ static void test1_func(abts_case *tc, void *data)
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
 
     /* Send Deactivate EPS bearer context accept */
+    bearer = test_bearer_find_by_ue_ebi(test_ue, 9);
+    ogs_assert(bearer);
     esmbuf = testesm_build_deactivate_eps_bearer_context_accept(bearer);
     ABTS_PTR_NOTNULL(tc, esmbuf);
     sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, esmbuf);
@@ -642,13 +656,14 @@ static void test1_func(abts_case *tc, void *data)
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
 
     /* Send Deactivate EPS bearer context accept */
+    bearer = test_bearer_find_by_ue_ebi(test_ue, 10);
+    ogs_assert(bearer);
     esmbuf = testesm_build_deactivate_eps_bearer_context_accept(bearer);
     ABTS_PTR_NOTNULL(tc, esmbuf);
     sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, esmbuf);
     ABTS_PTR_NOTNULL(tc, sendbuf);
     rv = testenb_s1ap_send(s1ap, sendbuf);
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
-#endif
 
     ogs_msleep(300);
 
