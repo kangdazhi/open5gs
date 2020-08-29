@@ -472,17 +472,11 @@ struct mme_ue_s {
     ogs_subscription_data_t subscription_data;
 
     /* ESM Info */
+    ogs_list_t      sess_list;
+
 #define MIN_EPS_BEARER_ID           5
 #define MAX_EPS_BEARER_ID           15
-
-#define CLEAR_EPS_BEARER_ID(__mME) \
-    do { \
-        ogs_assert((__mME)); \
-        (__mME)->ebi = MIN_EPS_BEARER_ID - 1; \
-    } while(0)
-    uint8_t         ebi; /* EPS Bearer ID generator */
     OGS_POOL(bearer_pool, mme_bearer_t);
-    ogs_list_t      sess_list;
 
 #define ECM_CONNECTED(__mME) \
     ((__mME) && ((__mME)->enb_ue != NULL))
