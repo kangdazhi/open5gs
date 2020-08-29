@@ -131,6 +131,56 @@ typedef struct smf_ue_s {
             smf_sess_remove(__sESS); \
     } while(0)
 
+typedef struct smf_bearer_s smf_bearer_t;
+typedef struct smf_sess_s smf_sess_t;
+
+typedef struct smf_pf_s {
+    ogs_lnode_t     lnode;
+    uint32_t        index;
+
+ED3(uint8_t spare:2;,
+    uint8_t direction:2;,
+    uint8_t identifier:4;)
+
+    ogs_ipfw_rule_t ipfw_rule;
+    char *flow_description;
+
+    smf_bearer_t    *bearer;
+} smf_pf_t;
+
+typedef struct smf_bearer_s {
+    ogs_lnode_t     lnode;          /**< A node of list_t */
+    uint32_t        index;
+
+    ogs_pfcp_pdr_t  *dl_pdr;
+    ogs_pfcp_pdr_t  *ul_pdr;
+    ogs_pfcp_far_t  *dl_far;
+    ogs_pfcp_far_t  *ul_far;
+    ogs_pfcp_qer_t  *qer;
+
+    uint8_t         qfi;            /* 5GC */
+    uint8_t         ebi;            /* EPC */
+
+    uint32_t        pgw_s5u_teid;   /* PGW-S5U TEID */
+    ogs_sockaddr_t  *pgw_s5u_addr;  /* PGW-S5U IPv4 */
+    ogs_sockaddr_t  *pgw_s5u_addr6; /* PGW-S5U IPv6 */
+
+    uint32_t        sgw_s5u_teid;   /* SGW-S5U TEID */
+    ogs_ip_t        sgw_s5u_ip;     /* SGW-S5U IPv4/IPv6 */
+
+    char            *name;          /* PCC Rule Name */
+    ogs_qos_t       qos;            /* QoS Infomration */
+
+    OGS_POOL(pf_pool, smf_pf_t);
+
+    /* Packet Filter Identifier Generator(1~15) */
+    uint8_t         pf_identifier;
+    /* Packet Filter List */
+    ogs_list_t      pf_list;
+
+    smf_sess_t      *sess;
+} smf_bearer_t;
+
 #define SMF_SESS(pfcp_sess) ogs_container_of(pfcp_sess, smf_sess_t, pfcp)
 typedef struct smf_sess_s {
     ogs_sbi_object_t sbi;
@@ -223,55 +273,6 @@ typedef struct smf_sess_s {
 
     smf_ue_t *smf_ue;
 } smf_sess_t;
-
-typedef struct smf_bearer_s smf_bearer_t;
-
-typedef struct smf_pf_s {
-    ogs_lnode_t     lnode;
-    uint32_t        index;
-
-ED3(uint8_t spare:2;,
-    uint8_t direction:2;,
-    uint8_t identifier:4;)
-
-    ogs_ipfw_rule_t ipfw_rule;
-    char *flow_description;
-
-    smf_bearer_t    *bearer;
-} smf_pf_t;
-
-typedef struct smf_bearer_s {
-    ogs_lnode_t     lnode;          /**< A node of list_t */
-    uint32_t        index;
-
-    ogs_pfcp_pdr_t  *dl_pdr;
-    ogs_pfcp_pdr_t  *ul_pdr;
-    ogs_pfcp_far_t  *dl_far;
-    ogs_pfcp_far_t  *ul_far;
-    ogs_pfcp_qer_t  *qer;
-
-    uint8_t         qfi;            /* 5GC */
-    uint8_t         ebi;            /* EPC */
-
-    uint32_t        pgw_s5u_teid;   /* PGW-S5U TEID */
-    ogs_sockaddr_t  *pgw_s5u_addr;  /* PGW-S5U IPv4 */
-    ogs_sockaddr_t  *pgw_s5u_addr6; /* PGW-S5U IPv6 */
-
-    uint32_t        sgw_s5u_teid;   /* SGW-S5U TEID */
-    ogs_ip_t        sgw_s5u_ip;     /* SGW-S5U IPv4/IPv6 */
-
-    char            *name;          /* PCC Rule Name */
-    ogs_qos_t       qos;            /* QoS Infomration */
-
-    OGS_POOL(pf_pool, smf_pf_t);
-
-    /* Packet Filter Identifier Generator(1~15) */
-    uint8_t         pf_identifier;
-    /* Packet Filter List */
-    ogs_list_t      pf_list;
-
-    smf_sess_t      *sess;
-} smf_bearer_t;
 
 void smf_context_init(void);
 void smf_context_final(void);
