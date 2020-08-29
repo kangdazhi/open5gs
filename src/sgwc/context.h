@@ -104,17 +104,6 @@ typedef struct sgwc_sess_s {
         bool            delete_indirect_tunnel;
     } state;
 
-    ogs_pfcp_pdr_id_t   pdr_id;     /* ID Generator(1~OGS_MAX_NUM_OF_PDR) */
-    ogs_pfcp_far_id_t   far_id;     /* ID Generator(1~OGS_MAX_NUM_OF_FAR) */
-    ogs_pfcp_urr_id_t   urr_id;     /* ID Generator(1~OGS_MAX_NUM_OF_URR) */
-    ogs_pfcp_qer_id_t   qer_id;     /* ID Generator(1~OGS_MAX_NUM_OF_URR) */
-    ogs_pfcp_bar_id_t   bar_id;     /* ID Generator(1~OGS_MAX_NUM_OF_BAR) */
-
-    /* ID Generator(OGS_MAX_NUM_OF_PDR~OGS_MAX_NUM_OF_PDR*2) */
-    ogs_pfcp_pdr_id_t   indirect_pdr_id;
-    /* ID Generator(OGS_MAX_NUM_OF_FAR~OGS_MAX_NUM_OF_FAR*2) */
-    ogs_pfcp_far_id_t   indirect_far_id;
-
     /* APN Configuration */
     ogs_pdn_t       pdn;
 

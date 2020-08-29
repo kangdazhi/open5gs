@@ -402,10 +402,6 @@ sgwc_sess_t *sgwc_sess_add(sgwc_ue_t *sgwc_ue, char *apn)
     sess->sgw_s5c_teid = sess->index;
     sess->sgwc_sxa_seid = sess->index;
 
-    /* Indirect tunnel ID generator */
-    sess->indirect_pdr_id = OGS_MAX_NUM_OF_PDR;
-    sess->indirect_far_id = OGS_MAX_NUM_OF_FAR;
-
     /* Set APN */
     ogs_cpystrn(sess->pdn.apn, apn, OGS_MAX_APN_LEN+1);
 
