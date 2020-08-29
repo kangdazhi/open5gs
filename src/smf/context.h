@@ -224,6 +224,22 @@ typedef struct smf_sess_s {
     smf_ue_t *smf_ue;
 } smf_sess_t;
 
+typedef struct smf_bearer_s smf_bearer_t;
+
+typedef struct smf_pf_s {
+    ogs_lnode_t     lnode;
+    uint32_t        index;
+
+ED3(uint8_t spare:2;,
+    uint8_t direction:2;,
+    uint8_t identifier:4;)
+
+    ogs_ipfw_rule_t ipfw_rule;
+    char *flow_description;
+
+    smf_bearer_t    *bearer;
+} smf_pf_t;
+
 typedef struct smf_bearer_s {
     ogs_lnode_t     lnode;          /**< A node of list_t */
     uint32_t        index;
@@ -247,6 +263,8 @@ typedef struct smf_bearer_s {
     char            *name;          /* PCC Rule Name */
     ogs_qos_t       qos;            /* QoS Infomration */
 
+    OGS_POOL(pf_pool, smf_pf_t);
+
     /* Packet Filter Identifier Generator(1~15) */
     uint8_t         pf_identifier;
     /* Packet Filter List */
@@ -254,19 +272,6 @@ typedef struct smf_bearer_s {
 
     smf_sess_t      *sess;
 } smf_bearer_t;
-
-typedef struct smf_pf_s {
-    ogs_lnode_t     lnode;
-
-ED3(uint8_t spare:2;,
-    uint8_t direction:2;,
-    uint8_t identifier:4;)
-
-    ogs_ipfw_rule_t ipfw_rule;
-    char *flow_description;
-
-    smf_bearer_t    *bearer;
-} smf_pf_t;
 
 void smf_context_init(void);
 void smf_context_final(void);

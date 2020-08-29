@@ -29,8 +29,6 @@ static OGS_POOL(smf_ue_pool, smf_ue_t);
 static OGS_POOL(smf_sess_pool, smf_sess_t);
 static OGS_POOL(smf_bearer_pool, smf_bearer_t);
 
-static OGS_POOL(smf_pf_pool, smf_pf_t);
-
 static int context_initialized = 0;
 
 void smf_context_init(void)
@@ -64,8 +62,6 @@ void smf_context_init(void)
     ogs_pool_init(&smf_sess_pool, ogs_app()->pool.sess);
     ogs_pool_init(&smf_bearer_pool, ogs_app()->pool.bearer);
 
-    ogs_pool_init(&smf_pf_pool, ogs_app()->pool.pf);
-
     self.supi_hash = ogs_hash_make();
     self.imsi_hash = ogs_hash_make();
     self.ipv4_hash = ogs_hash_make();
@@ -92,8 +88,6 @@ void smf_context_final(void)
     ogs_pool_final(&smf_ue_pool);
     ogs_pool_final(&smf_bearer_pool);
     ogs_pool_final(&smf_sess_pool);
-
-    ogs_pool_final(&smf_pf_pool);
 
     ogs_gtp_node_remove_all(&self.sgw_s5c_list);
 
@@ -1200,6 +1194,8 @@ smf_bearer_t *smf_bearer_add(smf_sess_t *sess)
     ogs_assert(bearer);
     memset(bearer, 0, sizeof *bearer);
 
+    ogs_pool_init(&bearer->pf_pool, OGS_MAX_NUM_OF_PF);
+
     bearer->index = ogs_pool_index(&smf_bearer_pool, bearer);
     ogs_assert(bearer->index > 0 && bearer->index <=
             ogs_app()->pool.bearer);
@@ -1314,6 +1310,8 @@ int smf_bearer_remove(smf_bearer_t *bearer)
         ogs_freeaddrinfo(bearer->upf_s5u_addr6);
 
     smf_pf_remove_all(bearer);
+
+    ogs_pool_final(&bearer->pf_pool);
 
     ogs_pool_free(&smf_bearer_pool, bearer);
 
@@ -1449,11 +1447,14 @@ smf_pf_t *smf_pf_add(smf_bearer_t *bearer, uint32_t precedence)
 
     ogs_assert(bearer);
 
-    ogs_pool_alloc(&smf_pf_pool, &pf);
+    ogs_pool_alloc(&bearer->pf_pool, &pf);
     ogs_assert(pf);
     memset(pf, 0, sizeof *pf);
 
-    pf->identifier = OGS_NEXT_ID(bearer->pf_identifier, 1, 15);
+    pf->index = ogs_pool_index(&bearer->pf_pool, pf);
+    ogs_assert(pf->index > 0 && pf->index <= OGS_MAX_NUM_OF_PF);
+
+    pf->identifier = pf->index;
     pf->bearer = bearer;
 
     ogs_list_add(&bearer->pf_list, pf);
@@ -1470,7 +1471,7 @@ int smf_pf_remove(smf_pf_t *pf)
     if (pf->flow_description)
         ogs_free(pf->flow_description);
 
-    ogs_pool_free(&smf_pf_pool, pf);
+    ogs_pool_free(&pf->bearer->pf_pool, pf);
 
     return OGS_OK;
 }
