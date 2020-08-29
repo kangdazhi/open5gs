@@ -586,8 +586,6 @@ int sgwc_bearer_remove(sgwc_bearer_t *bearer)
 
     sgwc_tunnel_remove_all(bearer);
 
-    ogs_pfcp_sess_clear(&bearer->pfcp);
-
     /* Free the buffered packets */
     for (i = 0; i < bearer->num_buffered_pkt; i++)
         ogs_pkbuf_free(bearer->buffered_pkts[i]);
@@ -690,7 +688,7 @@ sgwc_tunnel_t *sgwc_tunnel_add(
     tunnel->index = ogs_pool_index(&sgwc_tunnel_pool, tunnel);
     ogs_assert(tunnel->index > 0 && tunnel->index <= ogs_app()->pool.tunnel);
 
-    pdr = ogs_pfcp_pdr_add(&bearer->pfcp);
+    pdr = ogs_pfcp_pdr_add(&sess->pfcp);
     ogs_assert(pdr);
     pdr->id = OGS_NEXT_ID(sess->pdr_id, 1, OGS_MAX_NUM_OF_PDR+1);
     pdr->src_if = src_if;
@@ -711,7 +709,7 @@ sgwc_tunnel_t *sgwc_tunnel_add(
     } else
         ogs_assert_if_reached();
 
-    far = ogs_pfcp_far_add(&bearer->pfcp);
+    far = ogs_pfcp_far_add(&sess->pfcp);
     ogs_assert(far);
     far->id = OGS_NEXT_ID(sess->far_id, 1, OGS_MAX_NUM_OF_FAR+1);
     far->dst_if = dst_if;
@@ -777,6 +775,9 @@ int sgwc_tunnel_remove(sgwc_tunnel_t *tunnel)
     ogs_assert(tunnel->bearer);
 
     ogs_list_remove(&tunnel->bearer->tunnel_list, tunnel);
+
+    ogs_pfcp_pdr_remove(tunnel->pdr);
+    ogs_pfcp_far_remove(tunnel->far);
 
     if (tunnel->local_addr)
         ogs_freeaddrinfo(tunnel->local_addr);
