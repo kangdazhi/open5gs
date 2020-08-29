@@ -389,6 +389,12 @@ sgwc_sess_t *sgwc_sess_add(sgwc_ue_t *sgwc_ue, char *apn)
     }
     memset(sess, 0, sizeof *sess);
 
+    ogs_pool_init(&sess->pfcp.pdr_pool, OGS_MAX_NUM_OF_PDR);
+    ogs_pool_init(&sess->pfcp.far_pool, OGS_MAX_NUM_OF_FAR);
+    ogs_pool_init(&sess->pfcp.urr_pool, OGS_MAX_NUM_OF_URR);
+    ogs_pool_init(&sess->pfcp.qer_pool, OGS_MAX_NUM_OF_QER);
+    ogs_pool_init(&sess->pfcp.bar_pool, OGS_MAX_NUM_OF_BAR);
+
     sess->index = ogs_pool_index(&sgwc_sess_pool, sess);
     ogs_assert(sess->index > 0 && sess->index <= ogs_app()->pool.sess);
 
@@ -487,6 +493,12 @@ int sgwc_sess_remove(sgwc_sess_t *sess)
     ogs_list_remove(&sgwc_ue->sess_list, sess);
 
     sgwc_bearer_remove_all(sess);
+
+    ogs_pool_final(&sess->pfcp.pdr_pool);
+    ogs_pool_final(&sess->pfcp.far_pool);
+    ogs_pool_final(&sess->pfcp.urr_pool);
+    ogs_pool_final(&sess->pfcp.qer_pool);
+    ogs_pool_final(&sess->pfcp.bar_pool);
 
     ogs_pool_free(&sgwc_sess_pool, sess);
 
