@@ -2788,6 +2788,7 @@ mme_bearer_t *mme_bearer_add(mme_sess_t *sess)
 
     bearer->ebi = OGS_NEXT_ID(mme_ue->ebi,
             MIN_EPS_BEARER_ID, MAX_EPS_BEARER_ID);
+    ogs_fatal("EBI[%d]", bearer->ebi);
 
     bearer->mme_ue = mme_ue;
     bearer->sess = sess;
