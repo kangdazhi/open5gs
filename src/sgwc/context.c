@@ -702,7 +702,7 @@ sgwc_tunnel_t *sgwc_tunnel_add(
 
     pdr = ogs_pfcp_pdr_add(&sess->pfcp);
     ogs_assert(pdr);
-    pdr->id = OGS_NEXT_ID(sess->pdr_id, 1, OGS_MAX_NUM_OF_PDR+1);
+    pdr->id = pdr->index;
     pdr->src_if = src_if;
 
     if (strlen(sess->pdn.apn))
@@ -723,23 +723,9 @@ sgwc_tunnel_t *sgwc_tunnel_add(
 
     far = ogs_pfcp_far_add(&sess->pfcp);
     ogs_assert(far);
-    far->id = OGS_NEXT_ID(sess->far_id, 1, OGS_MAX_NUM_OF_FAR+1);
+    far->id = far->index;
     far->dst_if = dst_if;
     ogs_pfcp_pdr_associate_far(pdr, far);
-
-    if (interface_type == OGS_GTP_F_TEID_SGW_GTP_U_FOR_DL_DATA_FORWARDING ||
-        interface_type == OGS_GTP_F_TEID_SGW_GTP_U_FOR_UL_DATA_FORWARDING) {
-
-        /*
-         * If it is an indirect tunnel,
-         * it will use a different ID space
-         * to avoid collisions with normal tunnels.
-         */
-        pdr->id = OGS_NEXT_ID(sess->indirect_pdr_id,
-                OGS_MAX_NUM_OF_PDR, OGS_MAX_NUM_OF_PDR*2);
-        far->id = OGS_NEXT_ID(sess->indirect_far_id,
-                OGS_MAX_NUM_OF_FAR, OGS_MAX_NUM_OF_FAR*2);
-    }
 
     ogs_assert(sess->pfcp_node);
     resource = ogs_pfcp_gtpu_resource_find(

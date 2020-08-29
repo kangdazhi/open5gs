@@ -1104,17 +1104,19 @@ smf_bearer_t *smf_qos_flow_add(smf_sess_t *sess)
 
     dl_pdr = ogs_pfcp_pdr_add(&sess->pfcp);
     ogs_assert(dl_pdr);
-    dl_pdr->id = OGS_NEXT_ID(sess->pdr_id, 1, OGS_MAX_NUM_OF_PDR+1);
+    dl_pdr->id = dl_pdr->index;
+    qos_flow->dl_pdr = dl_pdr;
+
     dl_pdr->src_if = OGS_PFCP_INTERFACE_CORE;
 
     if (strlen(sess->pdn.apn))
         dl_pdr->apn = ogs_strdup(sess->pdn.apn);
 
-    qos_flow->dl_pdr = dl_pdr;
-
     ul_pdr = ogs_pfcp_pdr_add(&sess->pfcp);
     ogs_assert(ul_pdr);
-    ul_pdr->id = OGS_NEXT_ID(sess->pdr_id, 1, OGS_MAX_NUM_OF_PDR+1);
+    ul_pdr->id = ul_pdr->index;
+    qos_flow->ul_pdr = ul_pdr;
+
     ul_pdr->src_if = OGS_PFCP_INTERFACE_ACCESS;
 
     if (strlen(sess->pdn.apn))
@@ -1133,31 +1135,29 @@ smf_bearer_t *smf_qos_flow_add(smf_sess_t *sess)
     } else
         ogs_assert_if_reached();
 
-    qos_flow->ul_pdr = ul_pdr;
-
     dl_far = ogs_pfcp_far_add(&sess->pfcp);
     ogs_assert(dl_far);
-    dl_far->id = OGS_NEXT_ID(sess->far_id, 1, OGS_MAX_NUM_OF_FAR+1);
+    dl_far->id = dl_far->index;
+    qos_flow->dl_far = dl_far;
+
     dl_far->dst_if = OGS_PFCP_INTERFACE_ACCESS;
     ogs_pfcp_pdr_associate_far(dl_pdr, dl_far);
 
-    qos_flow->dl_far = dl_far;
-
     ul_far = ogs_pfcp_far_add(&sess->pfcp);
     ogs_assert(ul_far);
-    ul_far->id = OGS_NEXT_ID(sess->far_id, 1, OGS_MAX_NUM_OF_FAR+1);
+    ul_far->id = ul_far->index;
+    qos_flow->ul_far = ul_far;
+
     ul_far->dst_if = OGS_PFCP_INTERFACE_CORE;
     ogs_pfcp_pdr_associate_far(ul_pdr, ul_far);
 
-    qos_flow->ul_far = ul_far;
-
     qer = ogs_pfcp_qer_add(&sess->pfcp);
     ogs_assert(qer);
-    qer->id = OGS_NEXT_ID(sess->qer_id, 1, OGS_MAX_NUM_OF_QER+1);
+    qer->id = qer->index;
+    qos_flow->qer = qer;
+
     ogs_pfcp_pdr_associate_qer(dl_pdr, qer);
     ogs_pfcp_pdr_associate_qer(ul_pdr, qer);
-
-    qos_flow->qer = qer;
 
     /* Allocate QFI */
     qer->qfi = OGS_NEXT_ID(sess->qos_flow_identifier, 1, OGS_MAX_QOS_FLOW_ID+1);
@@ -1208,17 +1208,19 @@ smf_bearer_t *smf_bearer_add(smf_sess_t *sess)
 
     dl_pdr = ogs_pfcp_pdr_add(&sess->pfcp);
     ogs_assert(dl_pdr);
-    dl_pdr->id = OGS_NEXT_ID(sess->pdr_id, 1, OGS_MAX_NUM_OF_PDR+1);
+    dl_pdr->id = dl_pdr->index;
+    bearer->dl_pdr = dl_pdr;
+
     dl_pdr->src_if = OGS_PFCP_INTERFACE_CORE;
 
     if (strlen(sess->pdn.apn))
         dl_pdr->apn = ogs_strdup(sess->pdn.apn);
 
-    bearer->dl_pdr = dl_pdr;
-
     ul_pdr = ogs_pfcp_pdr_add(&sess->pfcp);
     ogs_assert(ul_pdr);
-    ul_pdr->id = OGS_NEXT_ID(sess->pdr_id, 1, OGS_MAX_NUM_OF_PDR+1);
+    ul_pdr->id = ul_pdr->index;
+    bearer->ul_pdr = ul_pdr;
+
     ul_pdr->src_if = OGS_PFCP_INTERFACE_ACCESS;
 
     if (strlen(sess->pdn.apn))
@@ -1237,23 +1239,21 @@ smf_bearer_t *smf_bearer_add(smf_sess_t *sess)
     } else
         ogs_assert_if_reached();
 
-    bearer->ul_pdr = ul_pdr;
-
     dl_far = ogs_pfcp_far_add(&sess->pfcp);
     ogs_assert(dl_far);
-    dl_far->id = OGS_NEXT_ID(sess->far_id, 1, OGS_MAX_NUM_OF_FAR+1);
+    dl_far->id = dl_far->index;
+    bearer->dl_far = dl_far;
+
     dl_far->dst_if = OGS_PFCP_INTERFACE_ACCESS;
     ogs_pfcp_pdr_associate_far(dl_pdr, dl_far);
 
-    bearer->dl_far = dl_far;
-
     ul_far = ogs_pfcp_far_add(&sess->pfcp);
     ogs_assert(ul_far);
-    ul_far->id = OGS_NEXT_ID(sess->far_id, 1, OGS_MAX_NUM_OF_FAR+1);
+    ul_far->id = ul_far->index;
+    bearer->ul_far = ul_far;
+
     ul_far->dst_if = OGS_PFCP_INTERFACE_CORE;
     ogs_pfcp_pdr_associate_far(ul_pdr, ul_far);
-
-    bearer->ul_far = ul_far;
 
     ogs_assert(sess->pfcp_node);
     resource = ogs_pfcp_gtpu_resource_find(

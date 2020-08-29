@@ -359,8 +359,7 @@ void smf_s5c_handle_create_bearer_response(
         if (!qer) {
             qer = ogs_pfcp_qer_add(&sess->pfcp);
             ogs_assert(qer);
-            qer->id = OGS_NEXT_ID(sess->qer_id, 1, OGS_MAX_NUM_OF_QER+1);
-
+            qer->id = qer->index;
             bearer->qer = qer;
         }
 

@@ -124,8 +124,7 @@ void smf_gx_handle_cca_initial_request(
         if (!qer) {
             qer = ogs_pfcp_qer_add(&sess->pfcp);
             ogs_assert(qer);
-            qer->id = OGS_NEXT_ID(sess->qer_id, 1, OGS_MAX_NUM_OF_QER+1);
-
+            qer->id = qer->index;
             bearer->qer = qer;
         }
 
