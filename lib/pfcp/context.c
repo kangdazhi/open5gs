@@ -795,6 +795,9 @@ ogs_pfcp_pdr_t *ogs_pfcp_pdr_add(ogs_pfcp_sess_t *sess)
     ogs_assert(pdr);
     memset(pdr, 0, sizeof *pdr);
 
+    pdr->index = ogs_pool_index(&sess->pdr_pool, pdr);
+    ogs_assert(pdr->index > 0 && pdr->index <= OGS_MAX_NUM_OF_PDR);
+
     pdr->sess = sess;
     ogs_list_add(&sess->pdr_list, pdr);
 
@@ -931,6 +934,9 @@ ogs_pfcp_far_t *ogs_pfcp_far_add(ogs_pfcp_sess_t *sess)
     ogs_assert(far);
     memset(far, 0, sizeof *far);
 
+    far->index = ogs_pool_index(&sess->far_pool, far);
+    ogs_assert(far->index > 0 && far->index <= OGS_MAX_NUM_OF_FAR);
+
     far->apply_action = OGS_PFCP_APPLY_ACTION_FORW;
 
     far->sess = sess;
@@ -1005,6 +1011,9 @@ ogs_pfcp_urr_t *ogs_pfcp_urr_add(ogs_pfcp_sess_t *sess)
     ogs_assert(urr);
     memset(urr, 0, sizeof *urr);
 
+    urr->index = ogs_pool_index(&sess->urr_pool, urr);
+    ogs_assert(urr->index > 0 && urr->index <= OGS_MAX_NUM_OF_URR);
+
     urr->sess = sess;
     ogs_list_add(&sess->urr_list, urr);
 
@@ -1072,6 +1081,9 @@ ogs_pfcp_qer_t *ogs_pfcp_qer_add(ogs_pfcp_sess_t *sess)
     ogs_pool_alloc(&sess->qer_pool, &qer);
     ogs_assert(qer);
     memset(qer, 0, sizeof *qer);
+
+    qer->index = ogs_pool_index(&sess->qer_pool, qer);
+    ogs_assert(qer->index > 0 && qer->index <= OGS_MAX_NUM_OF_QER);
 
     qer->sess = sess;
     ogs_list_add(&sess->qer_list, qer);

@@ -112,6 +112,7 @@ typedef struct ogs_pfcp_bar_s ogs_pfcp_bar_t;
 
 typedef struct ogs_pfcp_pdr_s {
     ogs_lnode_t             lnode;
+    uint32_t                index;
 
     uint64_t                hashkey;
 
@@ -149,6 +150,7 @@ typedef struct ogs_pfcp_pdr_s {
 
 typedef struct ogs_pfcp_far_s {
     ogs_lnode_t             lnode;
+    uint32_t                index;
 
     ogs_pfcp_far_id_t       id;
     ogs_pfcp_apply_action_t apply_action;
@@ -169,6 +171,7 @@ typedef struct ogs_pfcp_far_s {
 
 typedef struct ogs_pfcp_urr_s {
     ogs_lnode_t             lnode;
+    uint32_t                index;
 
     ogs_pfcp_urr_id_t       id;
 
@@ -177,6 +180,7 @@ typedef struct ogs_pfcp_urr_s {
 
 typedef struct ogs_pfcp_qer_s {
     ogs_lnode_t             lnode;
+    uint32_t                index;
 
     ogs_pfcp_qer_id_t       id;
 
