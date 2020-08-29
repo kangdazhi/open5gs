@@ -579,7 +579,7 @@ typedef struct mme_bearer_s {
     ogs_lnode_t     lnode;
     ogs_fsm_t       sm;             /* State Machine */
 
-    uint8_t         ebi;            /* EPS Bearer ID */    
+    uint8_t         ebi;            /* EPS Bearer ID */
 
     uint32_t        enb_s1u_teid;
     ogs_ip_t        enb_s1u_ip;
