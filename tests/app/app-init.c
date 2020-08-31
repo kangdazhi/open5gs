@@ -30,6 +30,7 @@ static ogs_thread_t *sgwc_thread = NULL;
 static ogs_thread_t *sgwu_thread = NULL;
 static ogs_thread_t *smf_thread = NULL;
 static ogs_thread_t *mme_thread = NULL;
+static ogs_thread_t *amf_thread = NULL;
 
 int app_initialize(const char *const argv[])
 {
@@ -85,6 +86,8 @@ int app_initialize(const char *const argv[])
         smf_thread = test_child_create("smf", argv_out);
     if (ogs_app()->parameter.no_mme == 0)
         mme_thread = test_child_create("mme", argv_out);
+    if (ogs_app()->parameter.no_amf == 0)
+        amf_thread = test_child_create("amf", argv_out);
 
     if (ogs_app()->parameter.no_ausf == 0)
         ausf_thread = test_child_create("ausf", argv_out);
@@ -92,6 +95,14 @@ int app_initialize(const char *const argv[])
         udm_thread = test_child_create("udm", argv_out);
     if (ogs_app()->parameter.no_udr == 0)
         udr_thread = test_child_create("udr", argv_out);
+
+    /*
+     * To avoid freeDiameter error
+     *
+     * ROUTING ERROR
+     * 'No remaining suitable candidate to route the message to' for:
+     */
+    ogs_msleep(500);
 
     return OGS_OK;;
 }
@@ -102,6 +113,7 @@ void app_terminate(void)
     if (udm_thread) ogs_thread_destroy(udm_thread);
     if (ausf_thread) ogs_thread_destroy(ausf_thread);
 
+    if (amf_thread) ogs_thread_destroy(amf_thread);
     if (mme_thread) ogs_thread_destroy(mme_thread);
     if (smf_thread) ogs_thread_destroy(smf_thread);
 

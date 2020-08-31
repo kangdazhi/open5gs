@@ -83,6 +83,14 @@ int app_initialize(const char *const argv[])
     if (ogs_app()->parameter.no_mme == 0)
         mme_thread = test_child_create("mme", argv_out);
 
+    /*
+     * To avoid freeDiameter error
+     *
+     * ROUTING ERROR
+     * 'No remaining suitable candidate to route the message to' for:
+     */
+    ogs_msleep(500);
+
     return OGS_OK;;
 }
 
