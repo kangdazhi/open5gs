@@ -62,6 +62,13 @@ int app_initialize(const char *const argv[])
     if (ogs_app()->parameter.no_udr == 0)
         udr_thread = test_child_create("udr", argv_out);
 
+    /*
+     * Wait for all sockets listening
+     * 
+     * If freeDiameter is not used, we can use a delay of less than 1 second.
+     */
+    ogs_msleep(500);
+
     return OGS_OK;;
 }
 

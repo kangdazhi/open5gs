@@ -253,6 +253,9 @@ static void test1_func(abts_case *tc, void *data)
     ABTS_PTR_NOTNULL(tc, recvbuf);
     testngap_recv(test_ue, recvbuf);
 
+    /* TODO : fix it */
+    ogs_msleep(300);
+
     /* Send GMM Status */
     gmmbuf = testgmm_build_gmm_status(test_ue,
             OGS_5GMM_CAUSE_MESSAGE_NOT_COMPATIBLE_WITH_THE_PROTOCOL_STATE);
